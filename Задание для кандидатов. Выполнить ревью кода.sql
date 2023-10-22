@@ -1,7 +1,7 @@
 create procedure syn.usp_ImportFileCustomerSeasonal
-	@ID_Record int --лишнее, переменная объявляется ниже в DECLARE
+	@ID_Record int
 as
-set nocount on --лишнее
+set nocount on
 begin
 	declare @RowCount int = (select count(*) from syn.SA_CustomerSeasonal)
 	declare @ErrorMessage varchar(max)
@@ -34,11 +34,11 @@ begin
 		,cast(cs.DateEnd as date) as DateEnd
 		,cd.ID as ID_dbo_CustomerDistributor
 		,cast(isnull(cs.FlagActive, 0) as bit) as FlagActive
-	into #CustomerSeasonal --копирование не сработает, т.к. локальная переменная не объявлена
+	into #CustomerSeasonal
 	from syn.SA_CustomerSeasonal cs
 		join dbo.Customer as cc on cc.UID_DS = cs.UID_DS_Customer
 			and cc.ID_mapping_DataSource = 1
-		join dbo.Season as s on s.Name = cs.Season --судя по названиям, это разные данные. сопоставление не сработает.
+		join dbo.Season as s on s.Name = cs.Season
 		join dbo.Customer as cd on cd.UID_DS = cs.UID_DS_CustomerDistributor
 			and cd.ID_mapping_DataSource = 1
 		join syn.CustomerSystemType as cst on cs.CustomerSystemType = cst.Name
