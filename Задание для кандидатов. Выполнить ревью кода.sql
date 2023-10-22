@@ -1,7 +1,7 @@
 create procedure syn.usp_ImportFileCustomerSeasonal
-	@ID_Record int
+	@ID_Record int  --лишнее, переменная объявляется ниже в DECLARE
 as
-set nocount on
+set nocount on --лишнее
 begin
 	declare @RowCount int = (select count(*) from syn.SA_CustomerSeasonal)
 	declare @ErrorMessage varchar(max)
@@ -34,11 +34,11 @@ begin
 		,cast(cs.DateEnd as date) as DateEnd
 		,cd.ID as ID_dbo_CustomerDistributor
 		,cast(isnull(cs.FlagActive, 0) as bit) as FlagActive
-	into #CustomerSeasonal
+	into #CustomerSeasonal --копирование не сработает, т.к. локальная переменная не объявлена
 	from syn.SA_CustomerSeasonal cs
 		join dbo.Customer as cc on cc.UID_DS = cs.UID_DS_Customer
 			and cc.ID_mapping_DataSource = 1
-		join dbo.Season as s on s.Name = cs.Season
+		join dbo.Season as s on s.Name = cs.Season --судя по названиям, это разные данные. сопоставление не сработает
 		join dbo.Customer as cd on cd.UID_DS = cs.UID_DS_CustomerDistributor
 			and cd.ID_mapping_DataSource = 1
 		join syn.CustomerSystemType as cst on cs.CustomerSystemType = cst.Name
@@ -59,7 +59,7 @@ begin
 			when try_cast(cs.DateEnd as date) is null then 'Невозможно определить Дату начала'
 			when try_cast(isnull(cs.FlagActive, 0) as bit) is null then 'Невозможно определить Активность'
 		end as Reason
-	into #BadInsertedRows
+	into #BadInsertedRows --копирование не сработает, т.к. локальная переменная не объявлена
 	from syn.SA_CustomerSeasonal as cs
 	left join dbo.Customer as cc on cc.UID_DS = cs.UID_DS_Customer
 		and cc.ID_mapping_DataSource = 1
